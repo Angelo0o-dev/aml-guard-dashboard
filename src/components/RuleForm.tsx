@@ -145,8 +145,6 @@ const RuleForm = ({ rule, onSubmit, onCancel, isLoading }: RuleFormProps) => {
                 <SelectContent>
                   <SelectItem value="ACTIVE">Active</SelectItem>
                   <SelectItem value="PAUSE">Pause</SelectItem>
-                  <SelectItem value="DELETE">Delete</SelectItem>
-                  <SelectItem value="CONTROL">Control</SelectItem>
                 </SelectContent>
               </Select>
             </div>

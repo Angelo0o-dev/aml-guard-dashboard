@@ -140,4 +140,13 @@ class ApiService {
   }
 }
 
-export const apiService = new ApiService();
+const apiService = new ApiService();
+
+// Export individual methods for convenience
+export const getRules = () => apiService.getRules();
+export const createRule = (rule: CreateRuleRequest) => apiService.createOrUpdateRule(rule);
+export const updateRule = (ruleId: string, rule: CreateRuleRequest) => apiService.updateRule({ ...rule, ruleId } as Rule);
+export const deleteRule = (ruleId: string) => apiService.deleteRule(ruleId);
+export const sendControlCommand = (command: ControlCommand | CreateRuleRequest) => apiService.sendControlCommand(command as ControlCommand);
+
+export { apiService };
