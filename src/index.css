@@ -6,33 +6,33 @@
 
 @layer base {
   :root {
-    /* Base colors - Professional blue palette */
-    --background: 220 26% 97%;
-    --foreground: 220 13% 18%;
+    /* Base colors - Professional neutral palette */
+    --background: 0 0% 98%;
+    --foreground: 240 10% 15%;
 
     /* Card and surfaces */
     --card: 0 0% 100%;
-    --card-foreground: 220 13% 18%;
+    --card-foreground: 240 10% 15%;
 
     --popover: 0 0% 100%;
-    --popover-foreground: 220 13% 18%;
+    --popover-foreground: 240 10% 15%;
 
-    /* Primary - Professional blue */
-    --primary: 217 91% 46%;
+    /* Primary - Refined blue accent */
+    --primary: 220 70% 50%;
     --primary-foreground: 0 0% 100%;
-    --primary-glow: 217 91% 60%;
+    --primary-glow: 220 70% 65%;
 
-    /* Secondary - Neutral tones */
-    --secondary: 220 14% 96%;
-    --secondary-foreground: 220 13% 18%;
+    /* Secondary - Sophisticated gray */
+    --secondary: 220 9% 92%;
+    --secondary-foreground: 240 10% 25%;
 
-    /* Muted elements */
-    --muted: 220 14% 96%;
-    --muted-foreground: 220 9% 46%;
+    /* Muted elements - Softer grays */
+    --muted: 220 9% 95%;
+    --muted-foreground: 240 5% 50%;
 
-    /* Accent - Compliance green */
-    --accent: 142 71% 45%;
-    --accent-foreground: 0 0% 100%;
+    /* Accent - Professional teal */
+    --accent: 200 95% 85%;
+    --accent-foreground: 240 10% 25%;
 
     /* Alert colors */
     --destructive: 0 84% 60%;
@@ -51,9 +51,9 @@
     --status-control: 258 90% 66%;
 
     /* Borders and inputs */
-    --border: 220 13% 91%;
-    --input: 220 13% 91%;
-    --ring: 217 91% 46%;
+    --border: 220 13% 88%;
+    --input: 220 13% 88%;
+    --ring: 220 70% 50%;
 
     /* Gradients */
     --gradient-primary: linear-gradient(135deg, hsl(var(--primary)), hsl(var(--primary-glow)));
@@ -127,6 +127,16 @@
   }
 
   body {
-    @apply bg-background text-foreground;
+    @apply bg-background text-foreground font-sans antialiased;
+  }
+  
+  /* Enhanced typography */
+  h1, h2, h3, h4, h5, h6 {
+    @apply font-semibold tracking-tight;
+  }
+  
+  /* Smooth transitions */
+  button, input, select, textarea {
+    @apply transition-colors duration-200;
   }
 }
