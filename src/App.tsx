@@ -20,13 +20,16 @@ const App = () => (
       <Sonner />
       <BrowserRouter>
         <SidebarProvider>
-          <div className="min-h-screen flex w-full">
+          <div className="min-h-screen flex w-full bg-gradient-to-br from-background via-background-secondary to-background">
             <AppSidebar />
             <div className="flex-1 flex flex-col">
-              <header className="h-12 flex items-center border-b bg-background px-4">
-                <SidebarTrigger />
+              <header className="h-16 flex items-center border-b border-border/40 bg-glass-primary/60 backdrop-blur-xl px-6">
+                <SidebarTrigger className="text-muted-foreground hover:text-foreground transition-colors" />
+                <div className="ml-4">
+                  <h1 className="text-lg font-semibold gradient-text">AML Rules Engine</h1>
+                </div>
               </header>
-              <main className="flex-1 p-6 bg-muted/10">
+              <main className="flex-1 p-8 overflow-auto bg-gradient-to-br from-transparent via-glass-primary/20 to-transparent">
                 <Routes>
                   <Route path="/" element={<Index />} />
                   <Route path="/rules" element={<RulesManagement />} />

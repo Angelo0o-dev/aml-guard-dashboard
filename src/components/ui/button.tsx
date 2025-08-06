@@ -5,19 +5,24 @@ import { cva, type VariantProps } from "class-variance-authority"
 import { cn } from "@/lib/utils"
 
 const buttonVariants = cva(
-  "inline-flex items-center justify-center gap-2 whitespace-nowrap rounded-lg text-sm font-medium ring-offset-background transition-all duration-200 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring focus-visible:ring-offset-2 disabled:pointer-events-none disabled:opacity-50 [&_svg]:pointer-events-none [&_svg]:size-4 [&_svg]:shrink-0",
+  "inline-flex items-center justify-center gap-2 whitespace-nowrap rounded-xl text-sm font-medium transition-all duration-300 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring focus-visible:ring-offset-2 disabled:pointer-events-none disabled:opacity-50 [&_svg]:pointer-events-none [&_svg]:size-4 [&_svg]:shrink-0 relative overflow-hidden",
   {
     variants: {
       variant: {
-        default: "bg-primary text-primary-foreground hover:bg-primary/90 shadow-sm",
+        default: 
+          "bg-gradient-to-r from-primary to-primary-glow text-primary-foreground hover:shadow-glow-primary hover:scale-105 active:scale-95 shadow-lg",
         destructive:
-          "bg-destructive text-destructive-foreground hover:bg-destructive/90 shadow-sm",
+          "bg-gradient-to-r from-destructive to-destructive-glow text-destructive-foreground hover:shadow-lg hover:scale-105 active:scale-95",
         outline:
-          "border border-border bg-background hover:bg-muted/50 text-muted-foreground hover:text-foreground shadow-sm",
+          "border border-border/60 bg-glass-primary/40 backdrop-blur-sm text-muted-foreground hover:bg-glass-secondary/60 hover:text-foreground hover:border-border hover:scale-105 active:scale-95",
         secondary:
-          "bg-muted text-muted-foreground hover:bg-muted/80 hover:text-foreground shadow-sm",
-        ghost: "text-muted-foreground hover:bg-muted/50 hover:text-foreground",
-        link: "text-primary underline-offset-4 hover:underline",
+          "bg-glass-secondary/60 backdrop-blur-sm text-secondary-foreground hover:bg-glass-tertiary/80 hover:scale-105 active:scale-95 border border-border/30",
+        ghost: 
+          "text-muted-foreground hover:bg-glass-primary/40 hover:text-foreground hover:backdrop-blur-sm hover:scale-105 active:scale-95",
+        link: 
+          "text-primary underline-offset-4 hover:underline hover:text-primary-glow",
+        accent:
+          "bg-gradient-to-r from-accent to-accent-glow text-accent-foreground hover:shadow-glow-accent hover:scale-105 active:scale-95 shadow-lg",
       },
       size: {
         default: "h-10 px-4 py-2",

@@ -6,7 +6,8 @@ import RulesTable from "@/components/RulesTable";
 import RuleForm from "@/components/RuleForm";
 import { Button } from "@/components/ui/button";
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
-import { Plus, Shield, Download } from "lucide-react";
+import { Plus, Shield, Download, Search, Filter } from "lucide-react";
+import { Input } from "@/components/ui/input";
 import { useToast } from "@/hooks/use-toast";
 import {
   AlertDialog,
@@ -27,6 +28,7 @@ const RulesManagement = () => {
   const [editingRule, setEditingRule] = useState<Rule | null>(null);
   const [deleteConfirmOpen, setDeleteConfirmOpen] = useState(false);
   const [ruleToDelete, setRuleToDelete] = useState<string | null>(null);
+  const [searchTerm, setSearchTerm] = useState("");
 
   const { data: rules = [] as Rule[], isLoading } = useQuery({
     queryKey: ['rules'],

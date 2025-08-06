@@ -11,30 +11,30 @@ const StatusBadge = ({ status }: StatusBadgeProps) => {
       case 'ACTIVE':
         return {
           label: 'Active',
-          className: 'bg-status-active text-white',
+          className: 'bg-gradient-to-r from-status-active to-success-glow text-white border-0',
           icon: Play
         };
       case 'PAUSE':
         return {
           label: 'Paused',
-          className: 'bg-status-pause text-white',
+          className: 'bg-gradient-to-r from-status-pause to-warning-glow text-white border-0',
           icon: Pause
         };
       case 'DELETE':
         return {
-          label: 'Delete',
-          className: 'bg-status-delete text-white',
+          label: 'Deleted',
+          className: 'bg-gradient-to-r from-status-delete to-destructive-glow text-white border-0',
           icon: Trash2
         };
       case 'CONTROL':
         return {
           label: 'Control',
-          className: 'bg-status-control text-white',
+          className: 'bg-gradient-to-r from-status-control to-primary-glow text-white border-0',
           icon: Settings
         };
       default:
         return {
-          label: status,
+          label: 'Unknown',
           className: 'bg-muted text-muted-foreground',
           icon: Settings
         };
@@ -45,7 +45,7 @@ const StatusBadge = ({ status }: StatusBadgeProps) => {
   const Icon = config.icon;
 
   return (
-    <Badge className={`${config.className} flex items-center gap-1`}>
+    <Badge className={`${config.className} px-3 py-1 text-xs font-medium flex items-center gap-1.5 shadow-lg hover:scale-105 transition-all duration-300`}>
       <Icon className="h-3 w-3" />
       {config.label}
     </Badge>
