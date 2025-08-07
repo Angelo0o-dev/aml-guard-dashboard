@@ -1,6 +1,8 @@
 import { Shield, AlertTriangle, Settings, BarChart3 } from "lucide-react";
 import { NavLink, useLocation } from "react-router-dom";
 import { cn } from "@/lib/utils";
+import { Badge } from "@/components/ui/badge";
+import { Separator } from "@/components/ui/separator";
 import {
   Sidebar,
   SidebarContent,
@@ -14,10 +16,10 @@ import {
 } from "@/components/ui/sidebar";
 
 const navigation = [
-  { title: "Dashboard", url: "/", icon: BarChart3 },
-  { title: "Rules Management", url: "/rules", icon: Shield },
-  { title: "Alerts", url: "/alerts", icon: AlertTriangle },
-  { title: "Control Panel", url: "/control", icon: Settings },
+  { title: "Dashboard", url: "/", icon: BarChart3, badge: null },
+  { title: "Rules Management", url: "/rules", icon: Shield, badge: null },
+  { title: "Alerts", url: "/alerts", icon: AlertTriangle, badge: "3" },
+  { title: "Control Panel", url: "/control", icon: Settings, badge: null },
 ];
 
 export function AppSidebar() {
@@ -27,55 +29,80 @@ export function AppSidebar() {
   const currentPath = location.pathname;
 
   const isActive = (path: string) => currentPath === path;
-  const getNavCls = ({ isActive }: { isActive: boolean }) =>
-    isActive ? "bg-primary/10 text-primary font-medium border-r-2 border-primary" : "hover:bg-muted/50";
 
   return (
-    <Sidebar className={`${collapsed ? "w-16" : "w-64"} border-r border-border/40 bg-glass-primary/60 backdrop-blur-xl`} collapsible="icon">
-      <SidebarContent className="bg-transparent">
+    <Sidebar className="border-r bg-background/95 backdrop-blur supports-[backdrop-filter]:bg-background/60" collapsible="icon">
+      <SidebarContent>
         <SidebarGroup>
-          <SidebarGroupLabel className="px-6 py-4 border-b border-border/30">
+          <SidebarGroupLabel className="px-6 py-4">
             <div className="flex items-center gap-3">
-              <div className="p-2 rounded-lg bg-gradient-to-r from-primary to-primary-glow">
-                <Shield className="h-5 w-5 text-white" />
+              <div className="flex h-8 w-8 items-center justify-center rounded-lg bg-primary">
+                <Shield className="h-4 w-4 text-primary-foreground" />
               </div>
               {!collapsed && (
-                <div>
-                  <span className="font-bold text-lg gradient-text">AML</span>
-                  <p className="text-xs text-muted-foreground">Rules Engine</p>
+                <div className="flex flex-col">
+                  <span className="text-sm font-semibold">AML Dashboard</span>
+                  <span className="text-xs text-muted-foreground">Rules Engine</span>
                 </div>
               )}
             </div>
           </SidebarGroupLabel>
           
+          <Separator className="mx-4" />
+          
           <SidebarGroupContent className="px-3 py-4">
-            <SidebarMenu className="space-y-2">
+            <SidebarMenu className="space-y-1">
               {navigation.map((item) => (
                 <SidebarMenuItem key={item.title}>
                   <SidebarMenuButton asChild>
-                    <NavLink to={item.url} end className={(navData) => cn(
-                      "flex items-center gap-3 px-4 py-3 rounded-xl transition-all duration-300 group relative overflow-hidden",
-                      navData.isActive 
-                        ? "bg-gradient-to-r from-primary/20 to-primary-glow/20 text-primary border border-primary/30 shadow-glow-primary" 
-                        : "text-muted-foreground hover:text-foreground hover:bg-glass-secondary/40 hover:backdrop-blur-sm"
-                    )}>
-                      <item.icon className={cn(
-                        "h-5 w-5 transition-all duration-300",
-                        isActive(item.url) ? "text-primary" : "group-hover:scale-110"
-                      )} />
-                      {!collapsed && (
-                        <span className="font-medium transition-all duration-300 group-hover:translate-x-1">
-                          {item.title}
-                        </span>
+                    <NavLink 
+                      to={item.url} 
+                      end 
+                      className={({ isActive }) => cn(
+                        "flex h-10 w-full items-center gap-3 rounded-lg px-3 py-2 text-sm font-medium transition-colors",
+                        isActive 
+                          ? "bg-primary text-primary-foreground" 
+                          : "text-muted-foreground hover:bg-accent hover:text-accent-foreground"
                       )}
-                      {isActive(item.url) && (
-                        <div className="absolute inset-0 bg-gradient-to-r from-primary/10 to-transparent rounded-xl" />
+                    >
+                      <item.icon className="h-4 w-4 shrink-0" />
+                      {!collapsed && (
+                        <>
+                          <span className="truncate">{item.title}</span>
+                          {item.badge && (
+                            <Badge variant="secondary" className="ml-auto h-5 w-5 p-0 text-xs">
+                              {item.badge}
+                            </Badge>
+                          )}
+                        </>
                       )}
                     </NavLink>
                   </SidebarMenuButton>
                 </SidebarMenuItem>
               ))}
             </SidebarMenu>
+          </SidebarGroupContent>
+        </SidebarGroup>
+
+        {/* System Status */}
+        <SidebarGroup className="mt-auto">
+          <SidebarGroupContent className="px-3 pb-4">
+            {!collapsed && (
+              <div className="rounded-lg border bg-card p-3 text-card-foreground">
+                <div className="flex items-center gap-2 text-sm">
+                  <div className="h-2 w-2 rounded-full bg-green-500" />
+                  <span className="font-medium">System Online</span>
+                </div>
+                <p className="mt-1 text-xs text-muted-foreground">
+                  All services operational
+                </p>
+              </div>
+            )}
+            {collapsed && (
+              <div className="flex justify-center">
+                <div className="h-2 w-2 rounded-full bg-green-500" />
+              </div>
+            )}
           </SidebarGroupContent>
         </SidebarGroup>
       </SidebarContent>
