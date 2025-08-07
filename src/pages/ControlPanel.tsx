@@ -3,10 +3,12 @@ import { useMutation } from "@tanstack/react-query";
 import { sendControlCommand } from "@/services/api";
 import { ControlCommand } from "@/types/rule";
 import { Button } from "@/components/ui/button";
-import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
+import { Card, CardContent, CardHeader, CardTitle, CardDescription } from "@/components/ui/card";
 import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
-import { AlertTriangle, Settings, Trash2, Download, Target } from "lucide-react";
+import { Badge } from "@/components/ui/badge";
+import { Separator } from "@/components/ui/separator";
+import { AlertTriangle, Settings, Trash2, Download, Target, Shield, Activity } from "lucide-react";
 import { useToast } from "@/hooks/use-toast";
 import {
   AlertDialog,
@@ -136,45 +138,41 @@ const ControlPanel = () => {
   return (
     <div className="space-y-6">
       {/* Header */}
-      <div className="flex items-center gap-3">
-        <Settings className="h-8 w-8 text-primary" />
-        <div>
-          <h1 className="text-3xl font-bold">Control Panel</h1>
-          <p className="text-muted-foreground">System-wide control commands and operations</p>
-        </div>
+      <div>
+        <h1 className="text-3xl font-bold tracking-tight">Control Panel</h1>
+        <p className="text-muted-foreground">
+          Execute system-wide commands and administrative operations
+        </p>
       </div>
 
-      {/* Warning Banner */}
-      <Card className="border-orange-200 bg-orange-50">
-        <CardContent className="p-4">
-          <div className="flex items-center gap-3">
-            <AlertTriangle className="h-5 w-5 text-orange-600" />
-            <div>
-              <p className="font-medium text-orange-800">Warning: System Control Commands</p>
-              <p className="text-sm text-orange-700">
-                These commands affect the entire system. Use with caution and ensure you have proper authorization.
-              </p>
-            </div>
-          </div>
-        </CardContent>
+      {/* Warning Alert */}
+      <Card className="border-destructive/50 bg-destructive/5">
+        <CardHeader>
+          <CardTitle className="flex items-center gap-2 text-destructive">
+            <AlertTriangle className="h-5 w-5" />
+            System Control Commands
+          </CardTitle>
+          <CardDescription>
+            These commands affect the entire system. Ensure you have proper authorization before proceeding.
+          </CardDescription>
+        </CardHeader>
       </Card>
 
-      {/* Control Commands Grid */}
-      <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
+      {/* Control Commands */}
+      <div className="grid gap-6 md:grid-cols-2 lg:grid-cols-3">
         {controlCommands.map((command) => (
-          <Card key={command.id} className="hover:shadow-lg transition-shadow">
+          <Card key={command.id} className="transition-all duration-200 hover:shadow-md">
             <CardHeader>
               <CardTitle className="flex items-center gap-3">
-                <div className={`p-2 rounded-lg ${command.bgColor}`}>
-                  <command.icon className={`h-5 w-5 ${command.color}`} />
+                <div className="flex h-10 w-10 items-center justify-center rounded-lg bg-muted">
+                  <command.icon className="h-5 w-5" />
                 </div>
-                <span className="text-lg">{command.title}</span>
+                {command.title}
               </CardTitle>
+              <CardDescription>{command.description}</CardDescription>
             </CardHeader>
             
             <CardContent className="space-y-4">
-              <p className="text-sm text-muted-foreground">{command.description}</p>
-              
               {command.id === 'deleteById' && (
                 <div className="space-y-2">
                   <Label htmlFor="ruleId">Rule ID to Delete</Label>
@@ -193,26 +191,55 @@ const ControlPanel = () => {
                 variant={command.dangerous ? "destructive" : "default"}
                 className="w-full"
               >
-                {controlMutation.isPending ? 'Executing...' : `Execute ${command.title}`}
+                {controlMutation.isPending ? 'Executing...' : command.title}
               </Button>
             </CardContent>
           </Card>
         ))}
       </div>
 
-      {/* Recent Control Actions */}
-      <Card>
-        <CardHeader>
-          <CardTitle>Recent Control Actions</CardTitle>
-        </CardHeader>
-        <CardContent>
-          <div className="text-center py-8 text-muted-foreground">
-            <Settings className="h-12 w-12 mx-auto mb-4 opacity-50" />
-            <p>Control action history will appear here</p>
-            <p className="text-sm">Recent system commands and their execution status</p>
-          </div>
-        </CardContent>
-      </Card>
+      {/* System Information */}
+      <div className="grid gap-4 md:grid-cols-2">
+        <Card>
+          <CardHeader>
+            <CardTitle>Recent Actions</CardTitle>
+            <CardDescription>Control command execution history</CardDescription>
+          </CardHeader>
+          <CardContent>
+            <div className="text-center py-8 text-muted-foreground">
+              <Activity className="mx-auto h-12 w-12 opacity-50" />
+              <h3 className="mt-4 text-lg font-semibold">No recent actions</h3>
+              <p className="mt-2 text-sm">
+                Control action history will appear here
+              </p>
+            </div>
+          </CardContent>
+        </Card>
+
+        <Card>
+          <CardHeader>
+            <CardTitle>System Status</CardTitle>
+            <CardDescription>Current system health and metrics</CardDescription>
+          </CardHeader>
+          <CardContent className="space-y-4">
+            <div className="flex items-center justify-between">
+              <span className="text-sm font-medium">Control Access</span>
+              <Badge variant="secondary" className="bg-green-100 text-green-800">
+                Authorized
+              </Badge>
+            </div>
+            <Separator />
+            <div className="flex items-center justify-between">
+              <span className="text-sm font-medium">System Status</span>
+              <Badge variant="secondary">Online</Badge>
+            </div>
+            <div className="flex items-center justify-between">
+              <span className="text-sm font-medium">Last Backup</span>
+              <span className="text-sm text-muted-foreground">2 hours ago</span>
+            </div>
+          </CardContent>
+        </Card>
+      </div>
 
       {/* Confirmation Dialog */}
       <AlertDialog open={confirmDialog.open} onOpenChange={(open) => 

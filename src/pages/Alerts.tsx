@@ -1,9 +1,11 @@
 import { useState } from "react";
-import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
+import { Card, CardContent, CardHeader, CardTitle, CardDescription } from "@/components/ui/card";
 import { Badge } from "@/components/ui/badge";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
-import { AlertTriangle, Search, Filter, Clock, Eye, CheckCircle } from "lucide-react";
+import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/components/ui/select";
+import { Separator } from "@/components/ui/separator";
+import { AlertTriangle, Search, Filter, Clock, Eye, CheckCircle, TrendingUp } from "lucide-react";
 import {
   Table,
   TableBody,
@@ -95,61 +97,72 @@ const Alerts = () => {
   return (
     <div className="space-y-6">
       {/* Header */}
-      <div className="flex items-center gap-3">
-        <AlertTriangle className="h-8 w-8 text-primary" />
-        <div>
-          <h1 className="text-3xl font-bold">Alerts Management</h1>
-          <p className="text-muted-foreground">Monitor and manage AML rule violations</p>
-        </div>
+      <div>
+        <h1 className="text-3xl font-bold tracking-tight">Alerts</h1>
+        <p className="text-muted-foreground">
+          Monitor and manage AML rule violations and incidents
+        </p>
       </div>
 
-      {/* Stats Cards */}
-      <div className="grid grid-cols-1 md:grid-cols-4 gap-4">
+      {/* Overview Cards */}
+      <div className="grid gap-4 md:grid-cols-4">
         <Card>
-          <CardContent className="p-4">
-            <div className="flex items-center gap-2">
-              <AlertTriangle className="h-4 w-4 text-destructive" />
-              <div>
-                <p className="text-sm text-muted-foreground">High Severity</p>
-                <p className="text-2xl font-bold">{alerts.filter(a => a.severity === 'HIGH').length}</p>
-              </div>
+          <CardHeader className="flex flex-row items-center justify-between space-y-0 pb-2">
+            <CardTitle className="text-sm font-medium">High Severity</CardTitle>
+            <AlertTriangle className="h-4 w-4 text-muted-foreground" />
+          </CardHeader>
+          <CardContent>
+            <div className="text-2xl font-bold text-red-600">
+              {alerts.filter(a => a.severity === 'HIGH').length}
             </div>
+            <p className="text-xs text-muted-foreground">
+              Require immediate attention
+            </p>
           </CardContent>
         </Card>
         
         <Card>
-          <CardContent className="p-4">
-            <div className="flex items-center gap-2">
-              <Clock className="h-4 w-4 text-orange-500" />
-              <div>
-                <p className="text-sm text-muted-foreground">Pending</p>
-                <p className="text-2xl font-bold">{alerts.filter(a => a.status === 'NEW').length}</p>
-              </div>
+          <CardHeader className="flex flex-row items-center justify-between space-y-0 pb-2">
+            <CardTitle className="text-sm font-medium">Pending</CardTitle>
+            <Clock className="h-4 w-4 text-muted-foreground" />
+          </CardHeader>
+          <CardContent>
+            <div className="text-2xl font-bold text-orange-600">
+              {alerts.filter(a => a.status === 'NEW').length}
             </div>
+            <p className="text-xs text-muted-foreground">
+              Awaiting review
+            </p>
           </CardContent>
         </Card>
         
         <Card>
-          <CardContent className="p-4">
-            <div className="flex items-center gap-2">
-              <Eye className="h-4 w-4 text-blue-500" />
-              <div>
-                <p className="text-sm text-muted-foreground">Acknowledged</p>
-                <p className="text-2xl font-bold">{alerts.filter(a => a.status === 'ACKNOWLEDGED').length}</p>
-              </div>
+          <CardHeader className="flex flex-row items-center justify-between space-y-0 pb-2">
+            <CardTitle className="text-sm font-medium">Acknowledged</CardTitle>
+            <Eye className="h-4 w-4 text-muted-foreground" />
+          </CardHeader>
+          <CardContent>
+            <div className="text-2xl font-bold text-blue-600">
+              {alerts.filter(a => a.status === 'ACKNOWLEDGED').length}
             </div>
+            <p className="text-xs text-muted-foreground">
+              Under investigation
+            </p>
           </CardContent>
         </Card>
         
         <Card>
-          <CardContent className="p-4">
-            <div className="flex items-center gap-2">
-              <CheckCircle className="h-4 w-4 text-green-500" />
-              <div>
-                <p className="text-sm text-muted-foreground">Resolved</p>
-                <p className="text-2xl font-bold">{alerts.filter(a => a.status === 'RESOLVED').length}</p>
-              </div>
+          <CardHeader className="flex flex-row items-center justify-between space-y-0 pb-2">
+            <CardTitle className="text-sm font-medium">Resolved</CardTitle>
+            <CheckCircle className="h-4 w-4 text-muted-foreground" />
+          </CardHeader>
+          <CardContent>
+            <div className="text-2xl font-bold text-green-600">
+              {alerts.filter(a => a.status === 'RESOLVED').length}
             </div>
+            <p className="text-xs text-muted-foreground">
+              Successfully closed
+            </p>
           </CardContent>
         </Card>
       </div>
@@ -157,53 +170,61 @@ const Alerts = () => {
       {/* Alerts Table */}
       <Card>
         <CardHeader>
-          <CardTitle className="flex items-center gap-2">
-            <Filter className="h-5 w-5" />
-            Recent Alerts
-          </CardTitle>
-          
-          <div className="flex flex-col sm:flex-row gap-4">
-            <div className="relative flex-1">
+          <CardTitle>Recent Alerts</CardTitle>
+          <CardDescription>
+            Monitor and investigate triggered alerts in real-time
+          </CardDescription>
+        </CardHeader>
+        <CardContent>
+          <div className="flex flex-col gap-4 sm:flex-row sm:items-center sm:justify-between">
+            <div className="relative flex-1 max-w-sm">
               <Search className="absolute left-3 top-1/2 transform -translate-y-1/2 h-4 w-4 text-muted-foreground" />
               <Input
-                placeholder="Search alerts by rule ID or message..."
+                placeholder="Search alerts..."
                 value={searchTerm}
                 onChange={(e) => setSearchTerm(e.target.value)}
                 className="pl-10"
               />
             </div>
             
-            <select
-              value={filterSeverity}
-              onChange={(e) => setFilterSeverity(e.target.value)}
-              className="px-3 py-2 border border-border rounded-md bg-background"
-            >
-              <option value="all">All Severities</option>
-              <option value="HIGH">High</option>
-              <option value="MEDIUM">Medium</option>
-              <option value="LOW">Low</option>
-            </select>
-            
-            <select
-              value={filterStatus}
-              onChange={(e) => setFilterStatus(e.target.value)}
-              className="px-3 py-2 border border-border rounded-md bg-background"
-            >
-              <option value="all">All Status</option>
-              <option value="NEW">New</option>
-              <option value="ACKNOWLEDGED">Acknowledged</option>
-              <option value="RESOLVED">Resolved</option>
-            </select>
+            <div className="flex gap-2">
+              <Select value={filterSeverity} onValueChange={setFilterSeverity}>
+                <SelectTrigger className="w-[140px]">
+                  <SelectValue placeholder="Severity" />
+                </SelectTrigger>
+                <SelectContent>
+                  <SelectItem value="all">All Severities</SelectItem>
+                  <SelectItem value="HIGH">High</SelectItem>
+                  <SelectItem value="MEDIUM">Medium</SelectItem>
+                  <SelectItem value="LOW">Low</SelectItem>
+                </SelectContent>
+              </Select>
+              
+              <Select value={filterStatus} onValueChange={setFilterStatus}>
+                <SelectTrigger className="w-[140px]">
+                  <SelectValue placeholder="Status" />
+                </SelectTrigger>
+                <SelectContent>
+                  <SelectItem value="all">All Status</SelectItem>
+                  <SelectItem value="NEW">New</SelectItem>
+                  <SelectItem value="ACKNOWLEDGED">Acknowledged</SelectItem>
+                  <SelectItem value="RESOLVED">Resolved</SelectItem>
+                </SelectContent>
+              </Select>
+            </div>
           </div>
-        </CardHeader>
-        
-        <CardContent>
+          
+          <Separator className="my-4" />
           {filteredAlerts.length === 0 ? (
-            <div className="text-center py-8">
-              <p className="text-muted-foreground">No alerts match your filters</p>
+            <div className="text-center py-12">
+              <AlertTriangle className="mx-auto h-12 w-12 text-muted-foreground" />
+              <h3 className="mt-4 text-lg font-semibold">No alerts found</h3>
+              <p className="mt-2 text-sm text-muted-foreground">
+                No alerts match your current filters
+              </p>
             </div>
           ) : (
-            <div className="overflow-x-auto">
+            <div className="rounded-md border">
               <Table>
                 <TableHeader>
                   <TableRow>
@@ -212,8 +233,7 @@ const Alerts = () => {
                     <TableHead>Severity</TableHead>
                     <TableHead>Status</TableHead>
                     <TableHead>Message</TableHead>
-                    <TableHead>Trigger Value</TableHead>
-                    <TableHead>Threshold</TableHead>
+                    <TableHead className="text-right">Values</TableHead>
                     <TableHead>Timestamp</TableHead>
                     <TableHead className="text-right">Actions</TableHead>
                   </TableRow>
@@ -221,7 +241,7 @@ const Alerts = () => {
                 <TableBody>
                   {filteredAlerts.map((alert) => (
                     <TableRow key={alert.id}>
-                      <TableCell className="font-medium">{alert.id}</TableCell>
+                      <TableCell className="font-mono text-xs">{alert.id}</TableCell>
                       <TableCell>
                         <Badge variant="outline">{alert.ruleId}</Badge>
                       </TableCell>
@@ -235,19 +255,27 @@ const Alerts = () => {
                           {alert.status}
                         </Badge>
                       </TableCell>
-                      <TableCell className="max-w-xs truncate">{alert.message}</TableCell>
-                      <TableCell>{alert.triggerValue.toLocaleString()}</TableCell>
-                      <TableCell>{alert.threshold.toLocaleString()}</TableCell>
-                      <TableCell>
-                        {new Date(alert.timestamp).toLocaleString()}
+                      <TableCell className="max-w-xs">
+                        <div className="truncate" title={alert.message}>
+                          {alert.message}
+                        </div>
                       </TableCell>
                       <TableCell className="text-right">
-                        <div className="flex justify-end gap-2">
-                          <Button variant="outline" size="sm">
+                        <div className="text-sm">
+                          <div className="font-medium">{alert.triggerValue.toLocaleString()}</div>
+                          <div className="text-muted-foreground">/ {alert.threshold.toLocaleString()}</div>
+                        </div>
+                      </TableCell>
+                      <TableCell className="text-sm text-muted-foreground">
+                        {new Date(alert.timestamp).toLocaleDateString()}
+                      </TableCell>
+                      <TableCell className="text-right">
+                        <div className="flex justify-end gap-1">
+                          <Button variant="ghost" size="sm">
                             <Eye className="h-4 w-4" />
                           </Button>
                           {alert.status === 'NEW' && (
-                            <Button size="sm">
+                            <Button variant="outline" size="sm">
                               Acknowledge
                             </Button>
                           )}

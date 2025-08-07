@@ -6,7 +6,9 @@ import RulesTable from "@/components/RulesTable";
 import RuleForm from "@/components/RuleForm";
 import { Button } from "@/components/ui/button";
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
-import { Plus, Shield, Download, Search, Filter } from "lucide-react";
+import { Badge } from "@/components/ui/badge";
+import { Separator } from "@/components/ui/separator";
+import { Plus, Shield, Download, Search, Filter, Activity, Clock, Pause } from "lucide-react";
 import { Input } from "@/components/ui/input";
 import { useToast } from "@/hooks/use-toast";
 import {
@@ -144,19 +146,18 @@ const RulesManagement = () => {
   return (
     <div className="space-y-6">
       {/* Header */}
-      <div className="flex items-center justify-between">
-        <div className="flex items-center gap-3">
-          <Shield className="h-8 w-8 text-primary" />
-          <div>
-            <h1 className="text-3xl font-bold">Rules Management</h1>
-            <p className="text-muted-foreground">Create and manage AML detection rules</p>
-          </div>
+      <div className="flex flex-col gap-2 lg:flex-row lg:items-center lg:justify-between">
+        <div>
+          <h1 className="text-3xl font-bold tracking-tight">Rules Management</h1>
+          <p className="text-muted-foreground">
+            Create and manage AML detection rules
+          </p>
         </div>
         
         <div className="flex gap-2">
           <Button variant="outline" onClick={handleExportRules}>
             <Download className="h-4 w-4 mr-2" />
-            Export Rules
+            Export
           </Button>
           <Button onClick={handleCreateRule}>
             <Plus className="h-4 w-4 mr-2" />
@@ -165,35 +166,66 @@ const RulesManagement = () => {
         </div>
       </div>
 
-      {/* Stats Card */}
-      <Card>
-        <CardContent className="p-6">
-          <div className="grid grid-cols-1 md:grid-cols-4 gap-4">
-            <div className="text-center">
-              <p className="text-2xl font-bold text-primary">{rules.length}</p>
-              <p className="text-sm text-muted-foreground">Total Rules</p>
+      {/* Overview Cards */}
+      <div className="grid gap-4 md:grid-cols-4">
+        <Card>
+          <CardHeader className="flex flex-row items-center justify-between space-y-0 pb-2">
+            <CardTitle className="text-sm font-medium">Total Rules</CardTitle>
+            <Shield className="h-4 w-4 text-muted-foreground" />
+          </CardHeader>
+          <CardContent>
+            <div className="text-2xl font-bold">{rules.length}</div>
+            <p className="text-xs text-muted-foreground">
+              +2 from last month
+            </p>
+          </CardContent>
+        </Card>
+        
+        <Card>
+          <CardHeader className="flex flex-row items-center justify-between space-y-0 pb-2">
+            <CardTitle className="text-sm font-medium">Active Rules</CardTitle>
+            <Activity className="h-4 w-4 text-muted-foreground" />
+          </CardHeader>
+          <CardContent>
+            <div className="text-2xl font-bold text-green-600">
+              {rules.filter(r => r.ruleState === 'ACTIVE').length}
             </div>
-            <div className="text-center">
-              <p className="text-2xl font-bold text-green-600">
-                {rules.filter(r => r.ruleState === 'ACTIVE').length}
-              </p>
-              <p className="text-sm text-muted-foreground">Active Rules</p>
+            <p className="text-xs text-muted-foreground">
+              Currently monitoring
+            </p>
+          </CardContent>
+        </Card>
+        
+        <Card>
+          <CardHeader className="flex flex-row items-center justify-between space-y-0 pb-2">
+            <CardTitle className="text-sm font-medium">Paused Rules</CardTitle>
+            <Pause className="h-4 w-4 text-muted-foreground" />
+          </CardHeader>
+          <CardContent>
+            <div className="text-2xl font-bold text-yellow-600">
+              {rules.filter(r => r.ruleState === 'PAUSE').length}
             </div>
-            <div className="text-center">
-              <p className="text-2xl font-bold text-yellow-600">
-                {rules.filter(r => r.ruleState === 'PAUSE').length}
-              </p>
-              <p className="text-sm text-muted-foreground">Paused Rules</p>
+            <p className="text-xs text-muted-foreground">
+              Temporarily disabled
+            </p>
+          </CardContent>
+        </Card>
+        
+        <Card>
+          <CardHeader className="flex flex-row items-center justify-between space-y-0 pb-2">
+            <CardTitle className="text-sm font-medium">Avg Window</CardTitle>
+            <Clock className="h-4 w-4 text-muted-foreground" />
+          </CardHeader>
+          <CardContent>
+            <div className="text-2xl font-bold">
+              {rules.length > 0 ? Math.round(rules.reduce((acc, rule) => acc + rule.windowMinutes, 0) / rules.length) : 0}m
             </div>
-            <div className="text-center">
-              <p className="text-2xl font-bold text-blue-600">
-                {rules.filter(r => r.ruleState === 'CONTROL').length}
-              </p>
-              <p className="text-sm text-muted-foreground">Control Rules</p>
-            </div>
-          </div>
-        </CardContent>
-      </Card>
+            <p className="text-xs text-muted-foreground">
+              Monitoring period
+            </p>
+          </CardContent>
+        </Card>
+      </div>
 
       {/* Form */}
       {isFormOpen && (

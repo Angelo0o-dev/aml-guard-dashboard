@@ -1,4 +1,3 @@
-import { useState, useEffect } from "react";
 import { Link } from "react-router-dom";
 import { useQuery } from "@tanstack/react-query";
 import { Rule } from "@/types/rule";
@@ -6,6 +5,8 @@ import { apiService } from "@/services/api";
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/components/ui/card";
 import { Button } from "@/components/ui/button";
 import { Badge } from "@/components/ui/badge";
+import { Progress } from "@/components/ui/progress";
+import { Separator } from "@/components/ui/separator";
 import StatusBadge from "@/components/StatusBadge";
 import { 
   Shield, 
@@ -17,7 +18,10 @@ import {
   Zap, 
   Clock,
   ArrowRight,
-  Plus
+  Plus,
+  Users,
+  Target,
+  Gauge
 } from "lucide-react";
 
 const Index = () => {
@@ -33,28 +37,45 @@ const Index = () => {
     avgWindow: rules.length > 0 ? Math.round(rules.reduce((acc, rule) => acc + rule.windowMinutes, 0) / rules.length) : 0,
   };
 
-  const StatCard = ({ title, value, description, icon: Icon, gradient, trend }: {
+  const StatCard = ({ title, value, description, icon: Icon, variant = "default", progress }: {
     title: string;
     value: string | number;
     description: string;
     icon: any;
-    gradient: string;
-    trend?: string;
-  }) => (
-    <Card className="group hover:scale-105 transition-all duration-300 cursor-default interactive">
-      <CardHeader className="flex flex-row items-center justify-between space-y-0 pb-2">
-        <CardTitle className="text-sm font-medium text-muted-foreground">{title}</CardTitle>
-        <div className={`p-2 rounded-xl ${gradient} group-hover:shadow-lg transition-all duration-300`}>
-          <Icon className="h-4 w-4 text-white" />
-        </div>
-      </CardHeader>
-      <CardContent>
-        <div className="text-3xl font-bold gradient-text mb-1">{value}</div>
-        <p className="text-xs text-muted-foreground">{description}</p>
-        {trend && <Badge variant="outline" className="text-xs mt-2">{trend}</Badge>}
-      </CardContent>
-    </Card>
-  );
+    variant?: "default" | "success" | "warning" | "destructive";
+    progress?: number;
+  }) => {
+    const getVariantStyles = () => {
+      switch (variant) {
+        case "success":
+          return "border-green-200 bg-green-50/50 dark:border-green-800 dark:bg-green-950/50";
+        case "warning":
+          return "border-yellow-200 bg-yellow-50/50 dark:border-yellow-800 dark:bg-yellow-950/50";
+        case "destructive":
+          return "border-red-200 bg-red-50/50 dark:border-red-800 dark:bg-red-950/50";
+        default:
+          return "";
+      }
+    };
+
+    return (
+      <Card className={`transition-all duration-200 hover:shadow-md ${getVariantStyles()}`}>
+        <CardHeader className="flex flex-row items-center justify-between space-y-0 pb-3">
+          <CardTitle className="text-sm font-medium">{title}</CardTitle>
+          <Icon className="h-5 w-5 text-muted-foreground" />
+        </CardHeader>
+        <CardContent>
+          <div className="text-2xl font-bold">{value}</div>
+          <p className="text-xs text-muted-foreground mt-1">{description}</p>
+          {progress !== undefined && (
+            <div className="mt-3">
+              <Progress value={progress} className="h-2" />
+            </div>
+          )}
+        </CardContent>
+      </Card>
+    );
+  };
 
   const ActionCard = ({ title, description, icon: Icon, href, buttonText, variant = "default" }: {
     title: string;
@@ -62,25 +83,25 @@ const Index = () => {
     icon: any;
     href: string;
     buttonText: string;
-    variant?: "default" | "outline";
+    variant?: "default" | "outline" | "secondary";
   }) => (
-    <Card className="group hover:scale-105 transition-all duration-300 interactive">
+    <Card className="transition-all duration-200 hover:shadow-md">
       <CardHeader>
-        <CardTitle className="flex items-center gap-3">
-          <div className="p-2 rounded-xl bg-gradient-to-r from-primary/20 to-primary-glow/20">
+        <CardTitle className="flex items-center gap-3 text-lg">
+          <div className="flex h-10 w-10 items-center justify-center rounded-lg bg-primary/10">
             <Icon className="h-5 w-5 text-primary" />
           </div>
           {title}
         </CardTitle>
-      </CardHeader>
-      <CardContent className="space-y-4">
-        <p className="text-sm text-muted-foreground leading-relaxed">
+        <CardDescription className="mt-2">
           {description}
-        </p>
+        </CardDescription>
+      </CardHeader>
+      <CardContent>
         <Link to={href}>
-          <Button className="w-full group" variant={variant}>
+          <Button className="w-full" variant={variant}>
             {buttonText}
-            <ArrowRight className="h-4 w-4 ml-2 group-hover:translate-x-1 transition-transform" />
+            <ArrowRight className="ml-2 h-4 w-4" />
           </Button>
         </Link>
       </CardContent>
@@ -88,76 +109,69 @@ const Index = () => {
   );
 
   return (
-    <div className="space-y-8 animate-fade-in">
-      {/* Hero Section */}
-      <div className="text-center py-12 space-y-6">
-        <div className="inline-flex p-4 rounded-2xl bg-gradient-to-r from-primary/20 to-primary-glow/20 mb-6">
-          <Shield className="h-12 w-12 text-primary" />
-        </div>
-        <h1 className="text-5xl font-bold gradient-text animate-scale-in">
-          AML Rules Dashboard
-        </h1>
-        <p className="text-xl text-muted-foreground max-w-2xl mx-auto leading-relaxed">
-          Monitor and manage your Anti-Money Laundering rules with real-time insights, 
-          advanced analytics, and intelligent controls
+    <div className="space-y-8">
+      {/* Header */}
+      <div className="space-y-2">
+        <h1 className="text-3xl font-bold tracking-tight">Dashboard</h1>
+        <p className="text-muted-foreground">
+          Monitor and manage your Anti-Money Laundering rules system
         </p>
       </div>
 
       {/* Stats Grid */}
-      <div className="grid gap-6 md:grid-cols-2 lg:grid-cols-4">
+      <div className="grid gap-4 md:grid-cols-2 lg:grid-cols-4">
         <StatCard
           title="Total Rules"
           value={stats.totalRules}
-          description="Rules configured in system"
+          description="Rules configured"
           icon={Shield}
-          gradient="bg-gradient-to-r from-primary to-primary-glow"
-          trend="+12% this month"
+          progress={75}
         />
         <StatCard
           title="Active Rules"
           value={stats.activeRules}
-          description="Currently monitoring transactions"
+          description="Currently monitoring"
           icon={Activity}
-          gradient="bg-gradient-to-r from-success to-success-glow"
-          trend="Real-time"
+          variant="success"
+          progress={85}
         />
         <StatCard
           title="Paused Rules"
           value={stats.pausedRules}
-          description="Temporarily disabled rules"
+          description="Temporarily disabled"
           icon={AlertTriangle}
-          gradient="bg-gradient-to-r from-warning to-warning-glow"
-          trend="Review pending"
+          variant="warning"
+          progress={20}
         />
         <StatCard
           title="Avg Window"
           value={`${stats.avgWindow}m`}
-          description="Average monitoring window"
-          icon={TrendingUp}
-          gradient="bg-gradient-to-r from-accent to-accent-glow"
-          trend="Optimized"
+          description="Monitoring window"
+          icon={Clock}
+          progress={60}
         />
       </div>
 
       {/* Quick Actions */}
-      <div className="grid grid-cols-1 md:grid-cols-3 gap-6">
+      <div className="grid gap-4 md:grid-cols-3">
         <ActionCard
           title="Rules Management"
-          description="Create, edit, and configure AML detection rules. Set up thresholds, grouping keys, and monitoring windows for comprehensive transaction analysis."
+          description="Create, edit, and configure AML detection rules with advanced thresholds and monitoring capabilities."
           icon={Shield}
           href="/rules"
           buttonText="Manage Rules"
         />
         <ActionCard
           title="Alert Center"
-          description="Monitor and investigate triggered alerts in real-time. Review high-risk transactions, analyze patterns, and take appropriate compliance actions."
+          description="Monitor and investigate triggered alerts in real-time. Review high-risk transactions and patterns."
           icon={AlertTriangle}
           href="/alerts"
           buttonText="View Alerts"
+          variant="secondary"
         />
         <ActionCard
           title="Control Panel"
-          description="Execute system-wide commands, export configurations, and perform administrative operations with enterprise-grade security and audit trails."
+          description="Execute system-wide commands, export configurations, and perform administrative operations."
           icon={Settings}
           href="/control"
           buttonText="Access Controls"
@@ -166,110 +180,128 @@ const Index = () => {
       </div>
 
       {/* Recent Rules Activity */}
-      <Card className="animate-slide-up">
-        <CardHeader>
-          <CardTitle className="flex items-center gap-3">
-            <div className="p-2 rounded-xl bg-gradient-to-r from-accent/20 to-accent-glow/20">
-              <BarChart3 className="h-5 w-5 text-accent" />
-            </div>
-            Recent Rules Activity
-          </CardTitle>
-          <CardDescription>
-            Latest configured rules and their current status
-          </CardDescription>
-        </CardHeader>
-        <CardContent>
-          {isLoading ? (
-            <div className="space-y-3">
-              {[1, 2, 3].map((i) => (
-                <div key={i} className="h-20 bg-glass-primary/40 rounded-xl animate-pulse" />
-              ))}
-            </div>
-          ) : rules.length === 0 ? (
-            <div className="text-center py-16">
-              <div className="inline-flex p-4 rounded-2xl bg-gradient-to-r from-muted/20 to-muted/10 mb-4">
-                <Zap className="h-12 w-12 text-muted-foreground" />
-              </div>
-              <h3 className="text-lg font-medium mb-2">No rules configured yet</h3>
-              <p className="text-muted-foreground mb-6">Get started by creating your first AML rule</p>
-              <Link to="/rules">
-                <Button>
-                  <Plus className="h-4 w-4 mr-2" />
-                  Create First Rule
-                </Button>
-              </Link>
-            </div>
-          ) : (
-            <div className="space-y-4">
-              {rules.slice(0, 5).map((rule, index) => (
-                <div 
-                  key={rule.ruleId} 
-                  className="flex items-center justify-between p-6 rounded-xl bg-glass-primary/40 hover:bg-glass-secondary/60 transition-all duration-300 group border border-border/30 hover:border-border/60"
-                  style={{ animationDelay: `${index * 100}ms` }}
-                >
-                  <div className="flex items-center gap-4">
-                    <div className="h-12 w-12 rounded-xl bg-gradient-to-r from-primary/20 to-primary-glow/20 flex items-center justify-center group-hover:scale-110 transition-transform">
-                      <Shield className="h-6 w-6 text-primary" />
+      <div className="grid gap-4 lg:grid-cols-3">
+        <div className="lg:col-span-2">
+          <Card>
+            <CardHeader>
+              <CardTitle>Recent Rules</CardTitle>
+              <CardDescription>
+                Latest configured rules and their current status
+              </CardDescription>
+            </CardHeader>
+            <CardContent>
+              {isLoading ? (
+                <div className="space-y-4">
+                  {[1, 2, 3].map((i) => (
+                    <div key={i} className="flex items-center space-x-4">
+                      <div className="h-12 w-12 rounded-lg bg-muted animate-pulse" />
+                      <div className="space-y-2 flex-1">
+                        <div className="h-4 bg-muted rounded animate-pulse" />
+                        <div className="h-3 bg-muted rounded w-2/3 animate-pulse" />
+                      </div>
                     </div>
-                    <div>
-                      <p className="font-semibold text-lg group-hover:text-foreground transition-colors">{rule.ruleId}</p>
-                      <p className="text-sm text-muted-foreground">
-                        {rule.aggregateFunctionType} aggregation • {rule.windowMinutes}min window • {rule.limitOperatorType} {rule.limit}
-                      </p>
-                    </div>
-                  </div>
-                  <div className="flex items-center gap-4">
-                    <StatusBadge status={rule.ruleState} />
-                    <div className="text-right">
-                      <p className="text-sm font-medium">{rule.groupingKeyNames.length} keys</p>
-                      <p className="text-xs text-muted-foreground">Grouping fields</p>
-                    </div>
+                  ))}
+                </div>
+              ) : rules.length === 0 ? (
+                <div className="text-center py-12">
+                  <Shield className="mx-auto h-12 w-12 text-muted-foreground" />
+                  <h3 className="mt-4 text-lg font-semibold">No rules configured</h3>
+                  <p className="mt-2 text-sm text-muted-foreground">
+                    Get started by creating your first AML rule
+                  </p>
+                  <div className="mt-6">
+                    <Link to="/rules">
+                      <Button>
+                        <Plus className="mr-2 h-4 w-4" />
+                        Create Rule
+                      </Button>
+                    </Link>
                   </div>
                 </div>
-              ))}
-              
-              {rules.length > 5 && (
-                <div className="text-center pt-4">
-                  <Link to="/rules">
-                    <Button variant="outline">
-                      View All {rules.length} Rules
-                      <ArrowRight className="h-4 w-4 ml-2" />
-                    </Button>
-                  </Link>
+              ) : (
+                <div className="space-y-4">
+                  {rules.slice(0, 5).map((rule) => (
+                    <div key={rule.ruleId} className="flex items-center justify-between p-4 rounded-lg border">
+                      <div className="flex items-center gap-4">
+                        <div className="flex h-10 w-10 items-center justify-center rounded-lg bg-primary/10">
+                          <Shield className="h-5 w-5 text-primary" />
+                        </div>
+                        <div>
+                          <p className="font-medium">{rule.ruleId}</p>
+                          <p className="text-sm text-muted-foreground">
+                            {rule.aggregateFunctionType} • {rule.windowMinutes}min • {rule.limitOperatorType} {rule.limit}
+                          </p>
+                        </div>
+                      </div>
+                      <div className="flex items-center gap-2">
+                        <StatusBadge status={rule.ruleState} />
+                        <Badge variant="outline">{rule.groupingKeyNames.length} keys</Badge>
+                      </div>
+                    </div>
+                  ))}
+                  
+                  {rules.length > 5 && (
+                    <Separator />
+                  )}
+                  {rules.length > 5 && (
+                    <div className="text-center">
+                      <Link to="/rules">
+                        <Button variant="outline">
+                          View All {rules.length} Rules
+                          <ArrowRight className="ml-2 h-4 w-4" />
+                        </Button>
+                      </Link>
+                    </div>
+                  )}
                 </div>
               )}
-            </div>
-          )}
-        </CardContent>
-      </Card>
+            </CardContent>
+          </Card>
+        </div>
 
-      {/* System Status */}
-      <Card className="bg-gradient-to-r from-glass-primary/40 to-glass-secondary/40 border-border/40">
-        <CardHeader>
-          <CardTitle className="flex items-center gap-3">
-            <div className="p-2 rounded-xl bg-gradient-to-r from-success/20 to-success-glow/20">
-              <Clock className="h-5 w-5 text-success" />
-            </div>
-            System Status
-          </CardTitle>
-        </CardHeader>
-        <CardContent>
-          <div className="grid md:grid-cols-3 gap-6">
-            <div className="text-center">
-              <div className="text-2xl font-bold text-success mb-1">Online</div>
-              <p className="text-sm text-muted-foreground">AML Engine Status</p>
-            </div>
-            <div className="text-center">
-              <div className="text-2xl font-bold gradient-text mb-1">24/7</div>
-              <p className="text-sm text-muted-foreground">Monitoring Active</p>
-            </div>
-            <div className="text-center">
-              <div className="text-2xl font-bold text-accent mb-1">99.9%</div>
-              <p className="text-sm text-muted-foreground">Uptime SLA</p>
-            </div>
-          </div>
-        </CardContent>
-      </Card>
+        <div className="space-y-4">
+          <Card>
+            <CardHeader>
+              <CardTitle className="text-lg">System Status</CardTitle>
+            </CardHeader>
+            <CardContent className="space-y-4">
+              <div className="flex items-center justify-between">
+                <span className="text-sm font-medium">Engine Status</span>
+                <Badge variant="secondary" className="bg-green-100 text-green-800">Online</Badge>
+              </div>
+              <div className="flex items-center justify-between">
+                <span className="text-sm font-medium">Monitoring</span>
+                <Badge variant="secondary">24/7 Active</Badge>
+              </div>
+              <div className="flex items-center justify-between">
+                <span className="text-sm font-medium">Uptime</span>
+                <span className="text-sm text-muted-foreground">99.9%</span>
+              </div>
+            </CardContent>
+          </Card>
+
+          <Card>
+            <CardHeader>
+              <CardTitle className="text-lg">Quick Stats</CardTitle>
+            </CardHeader>
+            <CardContent className="space-y-4">
+              <div className="flex items-center justify-between">
+                <span className="text-sm">Processing Rate</span>
+                <span className="text-sm font-medium">1.2k/min</span>
+              </div>
+              <div className="flex items-center justify-between">
+                <span className="text-sm">Alert Rate</span>
+                <span className="text-sm font-medium">0.3%</span>
+              </div>
+              <div className="flex items-center justify-between">
+                <span className="text-sm">Avg Response</span>
+                <span className="text-sm font-medium">45ms</span>
+              </div>
+            </CardContent>
+          </Card>
+        </div>
+      </div>
+
     </div>
   );
 };
